@@ -4,6 +4,7 @@ import './App.css';
 
 const MyContext = React.createContext();
 
+//an indirect passing of data through the Context component
 class Provider extends Component {
   state = {
     viewer: null
@@ -73,7 +74,9 @@ class App extends Component {
         <div className="App">
           <header className="App-header">
             <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">Welcome to React</h1>
+            <MyContext.Consumer>
+              {({ viewer }) => <h1 className="App-title">{viewer ? `Welcome ${viewer}!` : `Please login!`}</h1>}
+            </MyContext.Consumer>
           </header>
           <div className="App-intro">
             <Nav />
