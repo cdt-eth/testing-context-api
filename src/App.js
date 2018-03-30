@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
+const MyContext = React.createContext();
+
+class Provider extends Component {
   state = {
     viewer: null
   };
@@ -17,16 +19,32 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <div className="App-intro">
-          {this.state.viewer ? (
+      <MyContext.Provider
+        value={{
+          viewer: this.state.viewer,
+          logIn: this.logIn,
+          logOut: this.logOut
+        }}
+      >
+        {this.props.children}
+      </MyContext.Provider>
+    );
+  }
+}
+
+const Nav = () => <LoginForm />;
+
+class LoginForm extends Component {
+  state = {};
+  render() {
+    return (
+      <MyContext.Consumer>
+        {value => {
+          const { viewer, logIn, logOut } = value;
+          return viewer ? (
             <React.Fragment>
-              <h1>Logged in as: {this.state.viewer}</h1>
-              <button onClick={this.logOut}>Log Out</button>
+              <h1>Logged in as: {viewer}</h1>
+              <button onClick={logOut}>Log Out</button>
             </React.Fragment>
           ) : (
             <React.Fragment>
@@ -34,16 +52,34 @@ class App extends Component {
               <button
                 type="submit"
                 onClick={() => {
-                  this.logIn(this.inputRef.value);
+                  logIn(this.inputRef.value);
                 }}
               >
                 {' '}
                 Log In{' '}
               </button>
             </React.Fragment>
-          )}
+          );
+        }}
+      </MyContext.Consumer>
+    );
+  }
+}
+
+class App extends Component {
+  render() {
+    return (
+      <Provider>
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h1 className="App-title">Welcome to React</h1>
+          </header>
+          <div className="App-intro">
+            <Nav />
+          </div>
         </div>
-      </div>
+      </Provider>
     );
   }
 }
